@@ -18,7 +18,13 @@
   "dependencies": {
     "koa": "~0.3.0",
     "co-views": "~0.1.0",
-    "swig": "~1.2.2"
+    "swig": "~1.2.2",
+    "co-busboy": "~0.1.1",
+    "koa-logger": "~1.1.1",
+    "aws-sdk": "~2.0.0-rc8",
+    "co-fs": "~1.1.1",
+    "s3-streaming-upload": "~0.1.9",
+    "node-uuid": "~1.4.1"
   },
   "devDependencies": {
     "forever": "~0.10.11"
