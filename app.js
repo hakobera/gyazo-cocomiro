@@ -6,10 +6,11 @@ var uuid = require('node-uuid');
 
 var render = require('./lib/render');
 var save = require('./lib/save');
+var s3 = require('./lib/s3');
 
 var app = module.exports = koa();
-var host = process.env.HOST || 'http://localhost:3000';
 var port = process.env.PORT || 3000;
+var host = process.env.HOST || ('http://localhost:' + port);
 
 // Middleware
 
@@ -34,6 +35,11 @@ app.use(route.post('/upload', function *() {
   }
 
   this.body = host + '/' + image.key;
+}));
+
+app.use(route.get('/:id', function *(id) {
+  var url = yield s3.getUrl(id);
+  this.redirect(url);
 }));
 
 // Error handler
