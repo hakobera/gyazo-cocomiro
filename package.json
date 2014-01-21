@@ -25,7 +25,9 @@
     "co-fs": "~1.1.1",
     "s3-streaming-upload": "~0.1.9",
     "node-uuid": "~1.4.1",
-    "raven": "~0.6.0"
+    "raven": "~0.6.0",
+    "koa-route": "~1.0.2",
+    "thunkify": "0.0.1"
   },
   "devDependencies": {
     "forever": "~0.10.11"
