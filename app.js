@@ -1,6 +1,7 @@
 var koa = require('koa');
 var route = require('koa-route');
 var logger = require('koa-logger');
+var favicon = require('koa-favicon');
 var parse = require('co-busboy');
 var uuid = require('node-uuid');
 
@@ -16,6 +17,7 @@ var host = process.env.HOST || ('http://localhost:' + port);
 // Middleware
 
 app.use(logger());
+app.use(favicon());
 
 // Routes
 
