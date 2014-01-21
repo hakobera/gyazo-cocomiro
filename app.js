@@ -47,7 +47,7 @@ app.use(route.get('/:id', function *(id) {
     this.body = yield render('show', {
       id: id,
       imageSrc: yield s3.getUrl(id),
-      commands: commands.replace('"', '\"')
+      commands: commands ? commands.replace('"', '\"') : ''
     });
   } else {
     this.throw(404);
