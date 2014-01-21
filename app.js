@@ -7,6 +7,7 @@ var uuid = require('node-uuid');
 var render = require('./lib/render');
 var save = require('./lib/save');
 var s3 = require('./lib/s3');
+var exceptionHandler = require('./lib/exceptionHandler');
 
 var app = module.exports = koa();
 var port = process.env.PORT || 3000;
@@ -38,8 +39,14 @@ app.use(route.post('/upload', function *() {
 }));
 
 app.use(route.get('/:id', function *(id) {
-  var url = yield s3.getUrl(id);
-  this.redirect(url);
+  var exists = yield s3.exists(id);
+
+  if (exists) {
+    var url = yield s3.getUrl(id);
+    this.redirect(url);
+  } else {
+    this.throw(404);
+  }
 }));
 
 // Error handler
@@ -48,12 +55,14 @@ app.use(function *(next) {
   try {
     yield next;
   } catch (err) {
-    this.throw(500, err.message);
+    this.status = 500;
+    this.body = err.message;
+    this.app.emit('error', err, this);
   }
 });
 
 app.on('error', function (err) {
-  console.error(err.stack);
+  exceptionHandler(err);
 });
 
 // Run server
