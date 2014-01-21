@@ -40,10 +40,15 @@ app.use(route.post('/upload', function *() {
 
 app.use(route.get('/:id', function *(id) {
   var exists = yield s3.exists(id);
-
   if (exists) {
-    var url = yield s3.getUrl(id);
-    this.redirect(url);
+    var q = this.query;
+    var commands = q._;
+
+    this.body = yield render('show', {
+      id: id,
+      imageSrc: yield s3.getUrl(id),
+      commands: commands.replace('"', '\"')
+    });
   } else {
     this.throw(404);
   }

@@ -1,0 +1,107 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>{{ id }} || Cocomiro</title>
+  <style>
+  * {
+    margin: 0;
+    padding: 0;
+  }
+
+  canvas {
+    max-width: 100%;
+  }
+  </style>
+</head>
+<body>
+  <canvas id="canvas"></canvas>
+<script>
+function drawCircle(ctx, x, y, radius, color, lineWidth) {
+  color ? color : (color = 'ff0000');
+  lineWidth ? lineWidth : (lineWidth = 5)
+
+  ctx.beginPath();
+  ctx.arc(x, y, radius, 0, 2 * Math.PI, false);
+  ctx.lineWidth = lineWidth;
+  ctx.strokeStyle = color;
+  ctx.stroke();
+}
+
+function parse(commandScript) {
+  if (!commandScript || commandScript === '') {
+    return [];
+  }
+
+  var commands = commandScript.split(',');
+  var result = [];
+  var cmd, i, len, ret;
+
+  for (i = 0, len = commands.length; i < len; ++i) {
+    cmd = commands[i];
+    ret = parseCommand(cmd);
+    if (ret.fn) {
+      result.push(ret);
+    }
+  }
+
+  return result;
+}
+
+function parseCommand(command) {
+  var pattern = /^([a-z]+)\((.*)\)$/
+  var ret = command.match(pattern);
+
+  var cmd = ret[1] || null;
+  var args = ret[2] ? ret[2].split(':') : null;
+  var fn = commandToFn(cmd, args);
+
+  return {
+    command: cmd,
+    arguments: args,
+    fn: fn
+  }
+}
+
+function commandToFn(cmd, args) {
+  if (cmd === 'c' && args.length >= 3) {
+    return drawCircle;
+  }
+  return null;
+}
+
+function applyCommands(ctx, commands) {
+  console.log(commands);
+  if (!commands || commands.length === 0) {
+    return;
+  }
+
+  var cmd, i, len, args;
+
+  for (i = 0, len = commands.length; i < len; ++i) {
+    cmd = commands[i];
+    cmd.arguments.unshift(ctx);
+    cmd.fn.apply(this, cmd.arguments);
+  }
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+  var canvas = document.getElementById('canvas');
+  var ctx = canvas.getContext('2d');
+  var img = new Image();
+  var script = "{{ commands }}";
+  var commands = parse(script);
+
+  img.onload = function () {
+    canvas.width = img.width;
+    canvas.height = img.height;
+    ctx.drawImage(img, 0, 0);
+
+    applyCommands(ctx, commands);
+  };
+  img.src = "{{ imageSrc|safe }}";
+});
+</script>
+</body>
+</html>
+
